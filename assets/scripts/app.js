@@ -16,6 +16,7 @@ function sendHttpRequest(method, url, data) {
 //			if (xhr.status >= 200 && xhr.status < 300) {
 //				resolve(xhr.response);
 //			} else {
+				//xhr.response;
 //				reject(new Error('Something went wrong!'))
 //			}
 //			resolve(xhr.response);
@@ -36,16 +37,28 @@ function sendHttpRequest(method, url, data) {
 		headers: {
 			'Content-Type': 'application/json'
 		}
-	}).then(response => {
-		return response.json();
-	});
+	})
+		.then(response => {
+			if (response.status >= 200 && response.statu < 300) {
+				return response.json();
+			} else {
+				return response.json().then(errData => {
+					console.log(errData);
+					throw new Error('Something went wrong - server-side');
+				});
+			}
+		})
+		.catch(error => {
+			console.log(error);
+			throw new Error('Something went wrong!');
+		});
 }
 
 async function fetchPosts() {
-//	try {
+	try {
 		const responseData = await sendHttpRequest(
 		'GET', 
-		'https://jsonplaceholder.typicode.com/posts'
+		'https://jsonplaceholder.typicode.com/pos'
 		);
 		const listOfPosts = responseData;
 		for (const post of listOfPosts) {
@@ -55,9 +68,9 @@ async function fetchPosts() {
 			postEl.querySelector('li').id = post.id;
 			listElement.append(postEl);
 		}
-//	} catch (error) {
-//		alert(error.message);
-//	}
+	} catch (error) {
+		alert(error.message);
+	}
 	
 }
 
